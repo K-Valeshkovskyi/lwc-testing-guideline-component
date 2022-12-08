@@ -1,0 +1,10 @@
+{
+  "noData": [],
+  "oneResult": [
+    {"addressline1":"1600 PENNSYLVANIA AVE NW","addressline2":"WASHINGTON DC  20500-0001","summaryline":"1600 PENNSYLVANIA AVE NW, WASHINGTON DC  20500-0001","organisation":"PRESIDENT","number":"1600","premise":"1600","street":"PENNSYLVANIA AVE NW","posttown":"WASHINGTON","county":"DISTRICT OF COLUMBIA","state":"DISTRICT OF COLUMBIA","stateabbreviation":"DC","postcode":"20500-0001","country":"UNITED STATES"}
+  ],
+  "manyResults": [
+    {"addressline1":"1600 PENNSYLVANIA AVE NW","addressline2":"WASHINGTON DC  20500-0001","summaryline":"1600 PENNSYLVANIA AVE NW, WASHINGTON DC  20500-0001","organisation":"PRESIDENT","number":"1600","premise":"1600","street":"PENNSYLVANIA AVE NW","posttown":"WASHINGTON","county":"DISTRICT OF COLUMBIA","state":"DISTRICT OF COLUMBIA","stateabbreviation":"DC","postcode":"20500-0001","country":"UNITED STATES"},
+    {"addressline1":"1600 PENNSYLVANIA AVE NW","addressline2":"WASHINGTON DC  20500-0002","summaryline":"1600 PENNSYLVANIA AVE NW, WASHINGTON DC  20500-0002","organisation":"PRESIDENT","number":"1600","premise":"1601","street":"PENNSYLVANIA AVE NW","posttown":"WASHINGTON","county":"DISTRICT OF COLUMBIA 2","state":"DISTRICT OF COLUMBIA 2","stateabbreviation":"DC","postcode":"20500-0020","country":"UNITED STATES"}
+  ]
+}

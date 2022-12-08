@@ -1,0 +1,211 @@
+<template>
+  <div class="slds-card" if:true={hasCountries}>
+
+    <!-- 
+      Here is a simple component with a 
+      a) picklist with countries, 
+      b) input for a postcode or a city
+      c) button to send a fetch request to a 3rd party
+      d) second picklist (rendered conditionally) showing options retrieved from fetch response
+      and automatic functionality, depending on different options length
+      1 - no options - component shows a LightningConfirm and sends a CustomEvent if user confirms that
+      2 - 1 option - component doesn't show second picklist and sends a CustomEvent with that option
+      3 - 2+ options - component automatically fires a CustomEvent with the selected option from second picklist
+    -->
+
+    <span if:true={rerender}></span>
+    <div class="slds-card__body slds-card__body_inner slds-var-p-vertical_xxx-small slds-is-relative">
+      <template if:true={isLoading}>
+        <lightning-spinner variant="brand"></lightning-spinner>
+      </template>
+      <div class="slds-var-m-bottom_medium">
+        <c-lwc-multiselect data-id="country-select"
+          options={countries} placeholder={labels.mainSelectPlaceholder} required={required}
+          onselect={handleSelectCountry}>
+        </c-lwc-multiselect>
+      </div>
+
+      <div class="slds-grid slds-grid_vertical-align-end slds-var-m-bottom_medium">
+        <lightning-input class="slds-col slds-m-bottom_none" type="text" 
+          label={labels.postcodeInputPlaceholder} value={searchTerm} 
+          onchange={handleUpdateSearch} onkeydown={handleKeydown}></lightning-input>
+        <lightning-button class="slds-var-m-left_small" data-id="fetch-button" variant="brand" label={labels.searchButtonLabel}
+          disabled={disabledSearch} 
+          onclick={handleSearch}></lightning-button>
+      </div>
+
+      <c-lwc-multiselect if:true={hasResults} data-id="address-select"
+        options={matches} fuzzy-search placeholder={labels.addressSelectPlaceholder}
+        label={label} required={required}
+        onselect={handleSelectAddress}>
+      </c-lwc-multiselect>
+
+
+      <!-- ALL the rest of functionality is here to be able to create different tests -->
+
+      <!-- triggering LightningToast -->
+      <lightning-button class="button slds-var-m-left_small" data-id="toast-button" variant="brand" label="Show toast"
+        onclick={handleToastCall}></lightning-button>
+
+      <!-- Getting contactList from Apex class using @wire -->
+      <template if:true={hasContacts}>
+        <template for:each={contacts.data} for:item="item">
+          <a href="#" key={item.Id} data-contact-id={item.Id} onclick={handleSelect}>
+            <lightning-layout>
+              <lightning-layout-item>
+                <img src={item.Picture__c} alt="Profile photo" />
+              </lightning-layout-item>
+              <lightning-layout-item padding="horizontal-small">
+                <p class="contact">{item.Name}</p>
+              </lightning-layout-item>
+            </lightning-layout>
+          </a>
+        </template>
+      </template>
+
+      <!-- 
+        Getting accountList from Apex class using @wire 
+        The difference is that contactList is a wired variable
+        and accountList is a result of wired function
+      -->
+
+      <template if:true={hasAccounts}>
+        <template for:each={accounts} for:item="item">
+          <a href="#" key={item.Id} data-contact-id={item.Id} onclick={handleSelect}>
+            <lightning-layout>
+              <lightning-layout-item padding="horizontal-small">
+                <p class="account">{item.Name}</p>
+              </lightning-layout-item>
+            </lightning-layout>
+          </a>
+        </template>
+      </template>
+
+
+      <!-- 
+        Getting object info through lightning/uiObjectInfoApi
+        @wire is triggering here on bound value change 
+      -->
+
+      <div class="slds-var-m-horizontal_medium">
+        <lightning-input data-id="get-object-info-input"
+          value=""
+          placeholder="Enter object API name"
+          label="Search"
+        ></lightning-input>
+        <p class="slds-var-p-vertical_small">
+          <lightning-button data-id="get-object-info-button"
+            label="Get Object Info"
+            onclick={handleBtnClick}
+          ></lightning-button>
+        </p>
+        <template if:true={objectInfo.data}>
+          <div class="scroller">
+            <pre>{objectInfoStr}</pre>
+          </div>
+        </template>
+      </div>
+      <template if:true={objectInfo.error}>
+        <p class="wire-errors">{objectErrorsStr}</p>
+      </template>
+      
+
+      <!-- Creating a record through LDS -->
+      <div class="slds-var-m-around_medium">
+        <lightning-input
+          label="Id"
+          disabled
+          data-id="accountId"
+          value={accountId}
+        ></lightning-input>
+        <lightning-input
+          label="Name" data-id="create-record-input"
+          onchange={handleNameChange}
+          class="slds-var-m-bottom_x-small"
+        ></lightning-input>
+        <lightning-button
+          label="Create Account" data-id="create-record-button"
+          variant="brand"
+          onclick={createAccount}
+        ></lightning-button>
+      </div>
+
+
+      <!-- Deleting a record through LDS -->
+      <template if:true={hasAccounts}>
+        <div class="slds-var-m-around_medium">
+          <template for:each={accounts} for:item="account">
+            <lightning-layout
+              key={account.Id}
+              class="slds-var-m-vertical_x-small"
+            >
+              <lightning-layout-item flexibility="grow">
+                <p data-id="delete-record-lds-layout-items">{account.Name}</p>
+              </lightning-layout-item>
+              <lightning-layout-item>
+                <lightning-button-icon data-id="delete-record-lds-delete-button"
+                  icon-name="utility:delete"
+                  onclick={deleteAccount}
+                  data-recordid={account.Id}
+                ></lightning-button-icon>
+              </lightning-layout-item>
+            </lightning-layout>
+          </template>
+        </div>
+      </template> 
+      <template if:true={hasDeleteRecordError}>
+        <p class="delete-record-error">{deleteRecordError}</p>
+      </template>
+
+
+
+
+      <!-- Updating record through LDS -->
+
+      <template if:true={hasSingleAccount}>
+        <lightning-layout class="slds-var-m-vertical_x-small" >
+          <lightning-layout-item flexibility="grow" data-id="update-record-lds-layout-items">
+            <lightning-input data-id="update-record-lds-input" 
+              label="" variant="label-hidden" 
+              value={singleAccount.Name} 
+              type="text" onchange={handleUpdateName}></lightning-input>
+          </lightning-layout-item>
+          <lightning-layout-item>
+            <lightning-button-icon data-id="update-record-lds-update-button"
+              icon-name="utility:save"
+              onclick={updateAccount}
+            ></lightning-button-icon>
+          </lightning-layout-item>
+        </lightning-layout>
+
+      </template>
+      <template if:true={hasUpdateRecordError}>
+        <p class="update-record-error">{updateRecordError}</p>
+      </template>
+
+
+
+      <!-- Getting accounts explicitly -->
+      <div>
+        <lightning-button label="Get Accounts" data-id="get-accounts-button" onclick={getAccounts}></lightning-button>
+        <template if:true={explicitAccountsCalloutError}>
+          <p data-id="get-accounts-error">{explicitAccountsCalloutError}</p>
+        </template>
+        <template if:true={gotAccounts}>
+          <div class="slds-var-m-around_medium">
+            <template for:each={explicitAccounts} for:item="account">
+              <lightning-layout
+                key={account.Id}
+                class="slds-var-m-vertical_x-small"
+              >
+                <lightning-layout-item flexibility="grow" data-id="get-accounts-item">
+                  {account.Name}
+                </lightning-layout-item>
+              </lightning-layout>
+            </template>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+</template>

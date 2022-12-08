@@ -1,0 +1,15 @@
+{
+  "list": [
+    {
+      "Id": "0031700000pJRRSAA4",
+      "Name": "Amy Taylor",
+      "Rating": "Low"
+    },
+    {
+      "Id": "0031700000pJRRTAA4",
+      "Name": "Michael Jones",
+      "Rating": "High"
+    }
+  ],
+  "emptyList" : []
+}

@@ -1,0 +1,23 @@
+{
+  "comment": "object simulating that one returned by getRecord callut. Is wrapped into 'data' as the component awaits the result in that way",
+  "data": {
+    "apiName": "Account",
+    "childRelationships": {},
+    "fields": {
+        "Id": {
+            "displayValue": null,
+            "value": "0031700000pJRRSAA4"
+        },
+        "Name": {
+            "displayValue": null,
+            "value": "Amy Taylor"
+        }
+    },
+    "id": "0031700000pJRRSAA4",
+    "lastModifiedById": "0058D000002pXyjQAE",
+    "lastModifiedDate": "2022-11-25T16:59:04.000Z",
+    "recordTypeId": "012000000000000AAA",
+    "recordTypeInfo": null,
+    "systemModstamp": "2022-11-25T16:59:04.000Z"
+  }
+}
